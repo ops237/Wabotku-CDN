@@ -6,6 +6,7 @@ import { ImagePreview } from '@/components/ImagePreview';
 import { UrlResult } from '@/components/UrlResult';
 import { HistoryGrid } from '@/components/HistoryGrid';
 import { uploadToGitHub } from '@/utils/githubUpload';
+import { ApiDocs } from '@/components/ApiDocs';
 
 interface HistoryItem {
   url: string;
@@ -129,6 +130,7 @@ export default function Home() {
 
         {/* History Section */}
         <HistoryGrid items={history} />
+        <ApiDocs />
       </main>
 
       {/* Footer */}
