@@ -15,10 +15,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Maksimal ukuran file 4 MB' }, { status: 400 });
     }
 
-    // Validasi tipe
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
-    if (!validTypes.includes(file.type)) {
-      return NextResponse.json({ success: false, error: 'Tipe file tidak didukung' }, { status: 400 });
+    const validMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'video/mp4'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.mp4'];
+
+    // Validate MIME type
+    if (!validMimeTypes.includes(file.type)) {
+      return NextResponse.json({ success: false, error: 'Unsupported file type' }, { status: 400 });
+    }
+
+    // Validate file extension
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+      return NextResponse.json({ success: false, error: 'Unsupported file extension' }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
