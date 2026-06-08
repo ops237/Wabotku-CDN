@@ -32,9 +32,9 @@ export function UrlResult({ url }: UrlResultProps) {
         <div className="flex gap-2">
           <button
             onClick={handleCopy}
-            className="flex-1 sm:flex-none sharp-box bg-[#00e5ff] text-black hover:bg-white px-5 py-3 font-black uppercase text-xs tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-none sharp-box bg-black text-white hover:bg-gray-900 px-5 py-3 font-black uppercase text-xs tracking-widest transition-all duration-300 flex items-center justify-center gap-2 hover:ring-1 hover:ring-[#00e5ff]"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-4 h-4 text-[#00e5ff]" /> : <Copy className="w-4 h-4" />}
             {copied ? 'COPIED' : 'COPY'}
           </button>
           <a 
