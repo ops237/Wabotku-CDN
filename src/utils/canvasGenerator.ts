@@ -1,5 +1,8 @@
-import { createCanvas, loadImage } from 'canvas';
+import { createCanvas, loadImage, registerFont } from 'canvas';
 import { Buffer } from 'buffer';
+import path from 'path';
+
+registerFont(path.resolve(process.cwd(), 'src/assets/fonts/sf-pro-text-10.ttf'), { family: 'SF Pro Text' });
 
 // Basic caching for image buffers
 const imageCache = new Map<string, Buffer>();
@@ -92,7 +95,7 @@ export async function generateCanvas({
     ctx.stroke();
 
     function drawText(str: string, size: number, y: number, bold: boolean = false) {
-        ctx.font = `${bold ? 'bold' : ''} ${size}px Sans`;
+        ctx.font = `${bold ? 'bold' : ''} ${size}px 'SF Pro Text'`;
         ctx.textAlign = 'center';
         ctx.fillStyle = 'white';
         ctx.shadowColor = 'black';

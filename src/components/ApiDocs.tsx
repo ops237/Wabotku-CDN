@@ -4,90 +4,34 @@ import React, { useState } from 'react';
 import { Terminal, Code2 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
-const SNIPPETS = {
-  Bash: `curl -X POST \\
-  -F "file=@/path/to/your/image.png" \\
-  https://cdn.wabotku.com/api/upload`,
-  
-  'Node.js': `const fs = require('fs');
-// If using older Node.js, you might need form-data package
-// const FormData = require('form-data');
-
-async function uploadImage() {
-  const formData = new FormData();
-  formData.append('file', new Blob([fs.readFileSync('./image.png')]));
-
-  const response = await fetch('https://cdn.wabotku.com/api/upload', {
-    method: 'POST',
-    body: formData,
-  });
-  
-  const data = await response.json();
-  console.log(data);
+export interface Snippets {
+  Bash: string;
+  'Node.js': string;
+  Python: string;
+  Golang: string;
 }
 
-uploadImage();`,
+interface ApiDocsProps {
+  snippets: Snippets;
+  title?: string;
+  responseExample?: string;
+}
 
-  Python: `import requests
+type Tab = keyof Snippets;
 
-url = 'https://cdn.wabotku.com/api/upload'
-files = {'file': open('image.png', 'rb')}
-
-response = requests.post(url, files=files)
-print(response.json())`,
-
-  Golang: `package main
-
-import (
-	"bytes"
-	"fmt"
-	"io"
-	"mime/multipart"
-	"net/http"
-	"os"
-	"path/filepath"
-)
-
-func main() {
-	url := "https://cdn.wabotku.com/api/upload"
-	filePath := "./image.png"
-
-	file, _ := os.Open(filePath)
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name()))
-	io.Copy(part, file)
-	writer.Close()
-
-	req, _ := http.NewRequest("POST", url, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	client := &http.Client{}
-	resp, _ := client.Do(req)
-	defer resp.Body.Close()
-
-	respBody, _ := io.ReadAll(resp.Body)
-	fmt.Println(string(respBody))
-}`
-};
-
-type Tab = keyof typeof SNIPPETS;
-
-export function ApiDocs() {
+export function ApiDocs({ snippets, title = "API Documentation", responseExample }: ApiDocsProps) {
   const [activeTab, setActiveTab] = useState<Tab>('Bash');
   const tabs: Tab[] = ['Bash', 'Node.js', 'Python', 'Golang'];
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(SNIPPETS[activeTab]);
+    navigator.clipboard.writeText(snippets[activeTab]);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-24 mb-12 px-4 animate-in fade-in duration-700">
+    <div className="w-full max-w-4xl mx-auto mb-12 animate-in fade-in duration-700">
       <div className="flex items-center gap-3 mb-6">
         <Terminal className="w-5 h-5 text-[#00e5ff]" />
-        <h2 className="text-lg font-black uppercase tracking-widest text-white glow-text">API Documentation</h2>
+        <h2 className="text-sm font-black uppercase tracking-widest text-white glow-text">{title}</h2>
         <div className="h-px flex-1 bg-gray-800 ml-4"></div>
       </div>
 
@@ -99,7 +43,7 @@ export function ApiDocs() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={twMerge(
-                'px-6 py-4 font-mono text-xs uppercase tracking-widest whitespace-nowrap transition-colors border-r border-gray-800 outline-none',
+                'px-6 py-4 font-mono text-[10px] uppercase tracking-widest whitespace-nowrap transition-colors border-r border-gray-800 outline-none',
                 activeTab === tab 
                   ? 'bg-[#00e5ff]/10 text-[#00e5ff] border-b-2 border-b-[#00e5ff]' 
                   : 'text-gray-500 hover:text-white hover:bg-gray-900 border-b-2 border-b-transparent'
@@ -112,8 +56,8 @@ export function ApiDocs() {
 
         {/* Code Content */}
         <div className="relative group">
-          <pre className="p-6 overflow-x-auto text-xs sm:text-sm text-gray-300 font-mono leading-relaxed bg-[#050505]">
-            <code>{SNIPPETS[activeTab]}</code>
+          <pre className="p-6 overflow-x-auto text-[11px] text-gray-300 font-mono leading-relaxed bg-[#050505]">
+            <code>{snippets[activeTab]}</code>
           </pre>
           
           <button 
@@ -126,12 +70,14 @@ export function ApiDocs() {
         </div>
         
         {/* Response Info */}
-        <div className="border-t border-gray-800 bg-black p-4">
-          <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-2">Success Response</div>
-          <code className="text-xs text-[#00e5ff]">
-            {'{ "success": true, "url": "https://raw.githubusercontent.com/..." }'}
-          </code>
-        </div>
+        {responseExample && (
+          <div className="border-t border-gray-800 bg-black p-4">
+            <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-2">Success Response</div>
+            <code className="text-xs text-[#00e5ff]">
+              {responseExample}
+            </code>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,7 +6,8 @@ import { ImagePreview } from '@/components/ImagePreview';
 import { UrlResult } from '@/components/UrlResult';
 import { HistoryGrid } from '@/components/HistoryGrid';
 import { uploadToGitHub } from '@/utils/githubUpload';
-import { ApiDocs } from '@/components/ApiDocs';
+import { Navbar, TabId } from '@/components/Navbar';
+import { ApiEndpointsSection } from '@/components/ApiEndpointsSection';
 
 interface HistoryItem {
   url: string;
@@ -14,6 +15,7 @@ interface HistoryItem {
 }
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<TabId>('uploader');
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -91,6 +93,8 @@ export default function Home() {
         </div>
       </header>
 
+      <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-start p-4 sm:p-12 relative">
         
@@ -98,44 +102,49 @@ export default function Home() {
         <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#00e5ff]/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
 
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8 sm:mt-16 relative z-10 items-start">
-          
-          {/* Left Column: Upload */}
-          <div className="flex flex-col gap-6 w-full max-w-xl mx-auto lg:mx-0">
-            <UploadBox onFileSelect={handleFileSelect} disabled={isUploading} />
-            
-            {error && (
-              <div className="sharp-box bg-red-950/30 border-red-600 text-red-400 p-4 font-mono text-xs flex items-center gap-3 animate-in shake duration-300">
-                <span className="bg-red-600 text-white px-2 py-0.5 font-bold">ERR</span> {error}
+        <div className="w-full max-w-6xl relative z-10">
+          {activeTab === 'uploader' ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8 items-start">
+              {/* Left Column: Upload */}
+              <div className="flex flex-col gap-6 w-full max-w-xl mx-auto lg:mx-0">
+                <UploadBox onFileSelect={handleFileSelect} disabled={isUploading} />
+                
+                {error && (
+                  <div className="sharp-box bg-red-950/30 border-red-600 text-red-400 p-4 font-mono text-xs flex items-center gap-3 animate-in shake duration-300">
+                    <span className="bg-red-600 text-white px-2 py-0.5 font-bold">ERR</span> {error}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* Right Column: Preview & Result */}
-          <div className="flex flex-col gap-6 w-full max-w-xl mx-auto lg:mx-0">
-            <ImagePreview 
-              file={file} 
-              previewUrl={previewUrl} 
-              progress={progress} 
-              isUploading={isUploading} 
-            />
-            {resultUrl && !isUploading && <UrlResult url={resultUrl} />}
-            {!file && !resultUrl && !isUploading && (
-              <div className="sharp-box p-8 text-center border-gray-800 opacity-30">
-                <p className="text-sm font-mono text-gray-600 uppercase tracking-widest">Waiting for file...</p>
+              {/* Right Column: Preview & Result */}
+              <div className="flex flex-col gap-6 w-full max-w-xl mx-auto lg:mx-0">
+                <ImagePreview 
+                  file={file} 
+                  previewUrl={previewUrl} 
+                  progress={progress} 
+                  isUploading={isUploading} 
+                />
+                {resultUrl && !isUploading && <UrlResult url={resultUrl} />}
+                {!file && !resultUrl && !isUploading && (
+                  <div className="sharp-box p-8 text-center border-gray-800 opacity-30">
+                    <p className="text-sm font-mono text-gray-600 uppercase tracking-widest">Waiting for file...</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+              
+              <div className="lg:col-span-2">
+                <HistoryGrid items={history} />
+              </div>
+            </div>
+          ) : (
+            <ApiEndpointsSection />
+          )}
         </div>
-
-        {/* History Section */}
-        <HistoryGrid items={history} />
-        <ApiDocs />
       </main>
 
       {/* Footer */}
       <footer className="p-8 border-t border-gray-900 text-center text-[11px] text-gray-600 font-mono uppercase tracking-widest z-10 relative bg-black">
-        <p>Wabotku CDN &copy; {new Date().getFullYear()} &bull; High Performance Image Hosting</p>
+        <p>Wabotku CDN &copy; {new Date().getFullYear()} &bull; High Performance Media Engine</p>
       </footer>
     </div>
   );
