@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     try {
         const imageBuffer = await generateCanvas({ bgUrl, groupName, memberCount, mode, profileUrl });
 
-        return new NextResponse(imageBuffer, {
+        return new NextResponse(Uint8Array.from(imageBuffer), {
             headers: {
                 'Content-Type': 'image/jpeg',
                 'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
